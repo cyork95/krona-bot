@@ -1,0 +1,30 @@
+{
+  "name": "krona-bot",
+  "version": "1.0.0",
+  "description": "This is an admin bot for Discord Servers.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyork95/krona-bot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "admin"
+  ],
+  "author": "Cody York (CoYoFroYo, cyork95)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyork95/krona-bot/issues"
+  },
+  "homepage": "https://github.com/cyork95/krona-bot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "eslint": "^7.19.0",
+    "unirest": "^0.6.0"
+  }
+}

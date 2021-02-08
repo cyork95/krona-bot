@@ -1,0 +1,5 @@
+{
+    "server":"Displays server name, total member count, creation data and region.",
+    "ping":"Sends Pong",
+    "beep":"Sends boop"
+}
