@@ -94,5 +94,74 @@ client.on('message', message => {
 	}
 });
 
+client.on('channelCreate', function(channel) {
+	console.log(`Channel Created: ${channel}`);
+});
+
+client.on('channelDelete', function(channel) {
+	console.log(`Channel Deleted: ${channel}`);
+});
+
+client.on('channelPinsUpdate', function(channel, time) {
+	console.log(`Channel Pins Update: ${channel}:${time}`);
+});
+
+client.on('channelUpdate', function(oldChannel, newChannel) {
+	console.log(`${oldChannel} to ${newChannel} channelUpdate -> a channel is updated - e.g. name change, topic change`);
+});
+
+client.on('clientUserGuildSettingsUpdate', function(clientUserGuildSettings) {
+	console.log(`${clientUserGuildSettings} clientUserGuildSettingsUpdate -> client user\'s settings update`);
+});
+
+client.on(newFunction(), function(clientUserSettings) {
+	console.log(`${clientUserSettings} clientUserSettingsUpdate -> client user's settings update`);
+});
+
+client.on('emojiCreate', function(emoji) {
+	console.log(`${emoji} a custom emoji is created in a guild`);
+});
+
+client.on('emojiDelete', function(emoji) {
+	console.log(`${emoji} a custom guild emoji is deleted`);
+});
+
+client.on('emojiUpdate', function(oldEmoji, newEmoji) {
+	console.log(`${oldEmoji} to ${newEmoji} a custom guild emoji is updated`);
+});
+
+client.on('guildBanAdd', function(guild, user) {
+	console.log(`${user} is banned from ${guild}`);
+});
+
+client.on('guildBanRemove', function(guild, user) {
+	console.log(`${user} is unbanned from ${guild}`);
+});
+
+client.on('guildMemberUpdate', function(oldMember, newMember) {
+	console.error(`${oldMember} member changes to ${newMember} - i.e. new role, removed role, nickname.`);
+});
+
+client.on('messageDelete', function(message) {
+	console.log(`message is deleted -> ${message}`);
+});
+
+client.on('messageDeleteBulk', function(messages) {
+	console.log(`messages are deleted -> ${messages}`);
+});
+
+client.on('roleDelete', function(role) {
+	console.error(`${role} is deleted`);
+});
+
+client.on('roleUpdate', function(oldRole, newRole) {
+	console.error(`${oldRole} is updated to ${newRole}`);
+});
+
+
 // login to Discord with your app's token
 client.login(token);
+
+function newFunction() {
+	return 'clientUserSettingsUpdate';
+}
