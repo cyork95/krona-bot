@@ -1,7 +1,7 @@
 module.exports = {
 	name: 'prune',
 	description: 'Prune up to 99 messages.',
-	permissions: 'MANAGE_MESSAGES',
+	permissions: 'MANAGE_ROLES',
 	execute(message, args) {
 		const amount = parseInt(args[0]) + 1;
 
