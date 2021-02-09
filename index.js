@@ -1,9 +1,10 @@
 // require nodes file system module
 const fs = require('fs');
-// require the discord.js module
 const Discord = require('discord.js');
-// require the config file and get appropriate variables
-const { prefix, token } = require('./config.json');
+const { prefix, token, mongodbURL } = require('./config.json');
+
+const Levels = require('discord-xp');
+Levels.setURL(mongodbURL);
 
 // create a new Discord client
 const client = new Discord.Client();
@@ -91,6 +92,18 @@ client.on('message', message => {
 	catch (error) {
 		console.error(error);
 		message.reply('there was an error trying to execute that command!');
+	}
+});
+
+client.on('message', async (message) => {
+	if (!message.guild) return;
+	if (message.author.bot) return;
+	// Min 1, Max 30
+	const randomAmountOfXp = Math.floor(Math.random() * 29) + 1;
+	const hasLeveledUp = await Levels.appendXp(message.author.id, message.guild.id, randomAmountOfXp);
+	if (hasLeveledUp) {
+		const user = await Levels.fetch(message.author.id, message.guild.id);
+		message.guild.channels.cache.find(i => i.name === 'rank').send(`${message.author}, congratulations! You have leveled up to **${user.level}**. :tada:`);
 	}
 });
 

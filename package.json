@@ -22,9 +22,11 @@
   },
   "homepage": "https://github.com/cyork95/krona-bot#readme",
   "dependencies": {
+    "discord-xp": "^1.1.7",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "eslint": "^7.19.0",
+    "mongodb": "^3.6.4",
     "querystring": "^0.2.0",
     "r2": "^2.0.1",
     "unirest": "^0.6.0"
