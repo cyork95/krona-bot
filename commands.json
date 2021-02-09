@@ -1,6 +1,6 @@
 {
     "add-role":"Adds specified role to the specified user.",
-    "args-list":"*Testing* Sends information about the arguments provided.",
+    "args-info":"*Testing* Sends information about the arguments provided.",
     "avatar":"Get the avatar URL of the tagged user(s), or your own avatar.",
     "ban":"Removes and bans the specified user from the server.",
     "beep":"Sends boop",
@@ -20,5 +20,6 @@
     "reload":"Utility command to reload a changed command.",
     "rm-role":"Removes specified role from the specified user.",
     "server":"Displays server name, total member count, creation data and region.",
+    "xp-for":"Displays the xp for a certian level",
     "greet-new-user":"*Automatic* The bot will automatically greet new members."
 }
