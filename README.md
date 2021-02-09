@@ -1,6 +1,5 @@
 # krona-bot
-## This is a Discord Server Admin bot I made with Javascript and JSON. This bot is pretty basic at this point, but I plan to update as needed.
-## The current set of commands can be found in the commands.json or below. THese commands are defualted to use the "!" key. (ex. !server)
+## This is a Discord Server Admin bot I made with Javascript and JSON. This bot is pretty basic at this point, but I plan to update as needed. The current set of commands can be found in the commands.json or below. These commands are defualted to use the "!" key. (ex. !server)
 ### "Command":"Description"
    "add-role":"Adds specified role to the specified user.",
    "args-list":"*Testing* Sends information about the arguments provided.",
