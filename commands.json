@@ -1,4 +1,5 @@
 {
+    "add-role":"Adds specified role to the specified user.",
     "args-list":"*Testing* Sends information about the arguments provided.",
     "avatar":"Get the avatar URL of the tagged user(s), or your own avatar.",
     "ban":"Removes and bans the specified user from the server.",
@@ -13,5 +14,6 @@
     "prune":"Removes messages from a channel.",
     "quote":"Sends a random quote.",
     "reload":"Utility command to reload a changed command.",
+    "rm-role":"Removes specified role from the specified user.",
     "server":"Displays server name, total member count, creation data and region."
 }

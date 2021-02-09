@@ -27,6 +27,11 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
+client.on('guildMemberAdd', (member) => {
+	console.log(`New User ${member.user.username} has joined ${member.guild.name}!`);
+	member.guild.channels.find(c => c.name === 'welcome').send(`${member.user.username} has joined this server! Lets give them a proper welcome!\n Since you are here I would like give you a nice rundown on some important information! Please try to complete each step:\n 1. Please read the rules in #rules and react so that we know you understand\n 2.Please add an introduction if you like to in the #introductions channel.\n 3. Please add your gamertag to #gamertags as well!\n 4. We have many fun roles you are welcome to look over in the #roles channel.\n 5. The #news channel contains a lot of neat knowledge for you as well.\n 6. A director will be with you shortly to get you settled into the server!`);
+});
+
 client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
