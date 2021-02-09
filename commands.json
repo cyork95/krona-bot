@@ -1,5 +1,17 @@
 {
-    "server":"Displays server name, total member count, creation data and region.",
+    "args-list":"*Testing* Sends information about the arguments provided.",
+    "avatar":"Get the avatar URL of the tagged user(s), or your own avatar.",
+    "ban":"Removes and bans the specified user from the server.",
+    "beep":"Sends boop",
+    "define":"Find a definition on Urban Dictionary",
+    "help":"Get help on any of the commands this bot has.",
+    "hug":"Send a friendly hug  to another member.",
+    "info":"Sends some bot info.",
+    "joke":"Send a random joke.",
+    "kick":"Kicks a player form the server.",
     "ping":"Sends Pong",
-    "beep":"Sends boop"
+    "prune":"Removes messages from a channel.",
+    "quote":"Sends a random quote.",
+    "reload":"Utility command to reload a changed command.",
+    "server":"Displays server name, total member count, creation data and region."
 }

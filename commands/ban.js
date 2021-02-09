@@ -1,6 +1,6 @@
 module.exports = {
 	name: 'ban',
-	description: 'Removes the specified user from the server.',
+	description: 'Removes and bans the specified user from the server.',
 	args: true,
 	guildOnly: true,
 	permissions: 'BAN_MEMBERS',
