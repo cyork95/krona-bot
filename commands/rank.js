@@ -1,4 +1,5 @@
 const Levels = require('discord-xp');
+const { RANK_CHANNEL } = require('../config.json');
 
 module.exports = {
 	name: 'rank',
@@ -11,6 +12,6 @@ module.exports = {
 		// If there isnt such user in the database, we send a message in general.
 		if (!user) return message.guild.channels.cache.find(i => i.name === 'rank').send('Seems like this user has not earned any xp so far.');
 		// We show the level.
-		message.guild.channels.cache.find(i => i.name === 'rank').send(`> **${target.tag}** is currently level ${user.level}.`);
+		message.guild.channels.cache.find(i => i.name === RANK_CHANNEL).send(`> **${target.tag}** is currently level ${user.level}.`);
 	},
 };

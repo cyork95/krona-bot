@@ -1,4 +1,5 @@
 const Levels = require('discord-xp');
+const { RANK_CHANNEL } = require('../config.json');
 
 module.exports = {
 	name: 'leaderboard',
@@ -11,6 +12,6 @@ module.exports = {
 		const leaderboard = await Levels.computeLeaderboard(message.client, rawLeaderboard, true);
 		// We map the outputs.
 		const lb = leaderboard.map(e => `${e.position}. ${e.username}#${e.discriminator}\nLevel: ${e.level}\nXP: ${e.xp.toLocaleString()}`);
-		message.guild.channels.cache.find(i => i.name === 'rank').send(`**Leaderboard**:\n\n${lb.join('\n\n')}`);
+		message.guild.channels.cache.find(i => i.name === RANK_CHANNEL).send(`**Leaderboard**:\n\n${lb.join('\n\n')}`);
 	},
 };

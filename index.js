@@ -1,13 +1,22 @@
 // require nodes file system module
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, token, mongodbURL } = require('./config.json');
+const { prefix, token, mongodbURL_RANK, mongodbURL_REACTION } = require('./config.json');
 
 const Levels = require('discord-xp');
-Levels.setURL(mongodbURL);
+Levels.setURL(mongodbURL_RANK);
+
+const mongoose = require('mongoose');
+mongoose.createConnection(mongodbURL_REACTION, { useNewUrlParser: true, useUnifiedTopology: true });
+const MessageSchema = new mongoose.Schema({
+	messageId: { type: String, required: true },
+	emojiRoleMappings: { type: mongoose.Schema.Types.Mixed },
+});
+const MessageModel = mongoose.model('message', MessageSchema);
+const cachedMessageReaction = new Map();
 
 // create a new Discord client
-const client = new Discord.Client();
+const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
 client.commands = new Discord.Collection();
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -161,6 +170,10 @@ client.on('messageDelete', function(message) {
 
 client.on('messageDeleteBulk', function(messages) {
 	console.log(`messages are deleted -> ${messages}`);
+});
+
+client.on('messageReactionAdd', async function(reaction, user) {
+//
 });
 
 client.on('roleDelete', function(role) {
