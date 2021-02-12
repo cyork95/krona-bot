@@ -1,4 +1,4 @@
-const Levels = require('discord-xp');
+const levels = require('discord-xp');
 
 module.exports = {
 	name: 'xp-for',
@@ -6,7 +6,7 @@ module.exports = {
 	args: true,
 	usage: '<level>',
 	async execute(message, args) {
-		const xpRequired = Levels.xpFor(args[0]);
+		const xpRequired = levels.xpFor(args[0]);
 		message.guild.channels.cache.find(i => i.name === 'rank').send(`The experince required for level ${args[0]} is ${xpRequired}.`);
 	},
 };

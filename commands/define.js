@@ -3,14 +3,15 @@ const Discord = require('discord.js');
 
 module.exports = {
 	name: 'define',
-	description: 'Find a definition on Urban Dictionary',
+	description: 'Find a definition of a word or phrase on Urban Dictionary',
 	args: true,
 	usage: '<search term>',
 	execute(message, args) {
+		message.delete({ timeout: 3500 });
 		const req = unirest('GET', 'https://mashape-community-urban-dictionary.p.rapidapi.com/define');
 
 		req.query({
-			'term': `${args[0]}`,
+			'term': `${args}`,
 		});
 
 		req.headers({
@@ -22,13 +23,17 @@ module.exports = {
 
 		req.end(function(res) {
 			if (res.error) throw new Error(res.error);
-			const jsonResponse = res.body;
-			const jsonEmbed = new Discord.MessageEmbed()
-				.setTitle(`Urban Dictionary Search for ${jsonResponse.list[0]['word']}`)
-				.setURL(jsonResponse.list[0]['permalink'])
-				.setDescription(jsonResponse.list[0]['definition'])
-				.addField('Example:', jsonResponse.list[0]['example']);
-			message.channel.send(jsonEmbed);
+			try {
+				const jsonResponse = res.body;
+				const jsonEmbed = new Discord.MessageEmbed()
+					.setTitle(`Urban Dictionary Search for ${jsonResponse.list[0]['word']}`)
+					.setDescription(jsonResponse.list[0]['definition'])
+					.addField('Example:', jsonResponse.list[0]['example']);
+				message.channel.send(jsonEmbed);
+			}
+			catch (err) {
+				message.channel.send(`Hmmmm... Urban Dictionary doesn't like the word ${args}. Maybe try a different one?`);
+			}
 		});
 	},
 };

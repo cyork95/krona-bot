@@ -1,4 +1,4 @@
-const Levels = require('discord-xp');
+const levels = require('discord-xp');
 const { RANK_CHANNEL } = require('../config.json');
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
 		// Grab the target.
 		const target = message.mentions.users.first() || message.author;
 		// Selects the target from the database.
-		const user = await Levels.fetch(target.id, message.guild.id);
+		const user = await levels.fetch(target.id, message.guild.id);
 		// If there isnt such user in the database, we send a message in general.
 		if (!user) return message.guild.channels.cache.find(i => i.name === 'rank').send('Seems like this user has not earned any xp so far.');
 		// We show the level.

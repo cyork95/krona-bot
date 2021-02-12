@@ -1,33 +1,27 @@
 module.exports = {
 	name: 'kick',
-	description: 'Removes the specified user from the server.',
+	description: 'Kicks the specified user from the server (they are allowed to come back with invites).',
 	args: true,
 	guildOnly: true,
 	permissions: 'KICK_MEMBERS',
-	usage: '<user> <reason>',
+	usage: '<@user> <reason>',
 	execute(message, args) {
-		const user = args[0];
-		if (user) {
-			const member = message.guild.member(user);
-			// If the member is in the guild
-			if (member) {
-				member.kick({ reason: args[1] }).then(() => {
-					// We let the message author know we were able to kick the person
-					message.reply(`Successfully kicked ${user.tag} for ${args[1]}`);
-				})
-					.catch(err => {
-						message.reply('I was unable to ban the member. Please ask @CoYoFroYo why this didnt work.');
-						console.error(err);
-					});
-			}
-			else {
-				// The mentioned user isn't in this server
-				message.reply(`${args[0]} isn't in this server!`);
-			}
+		const user = message.mentions.users.first();
+		const reason = args.slice(1).join(' ');
+		const member = message.guild.member(user);
+		message.delete({ timeout: 3500 });
+		if (member) {
+			const memberToKick = message.guild.members.cache.get(member.id);
+			memberToKick.kick({ reason: reason }).then(() => {
+				message.reply(`Successfully kicked ${user} for ${reason}!`);
+			})
+				.catch(err => {
+					message.reply('I was unable to kick the member. Please ask <@CoYoFroYo> why this didnt work.');
+					console.error(err);
+				});
 		}
 		else {
-			// Otherwise, if no user was mentioned
-			message.reply('You didn\'t mention the user to ban!');
+			message.reply(`${user} isn't in this server or can't be kicked!`);
 		}
 	},
 };

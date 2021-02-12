@@ -3,18 +3,19 @@ module.exports = {
 	description: 'Removes specified role from the specified user.',
 	args: true,
 	permissions: 'MANAGE_ROLES_OR_PERMISSIONS',
-	usage: '<user> <role>',
+	usage: '<@user> <role>',
 	execute(message, args) {
-		const user = args[0];
+		const user = message.mentions.users.first();
+		const member = message.guild.member(user);
 		if (user) {
 			const roleChosen = message.guild.roles.cache.find(role => role.name === args[1]);
 			if (roleChosen) {
-				const member = message.guild.member(user);
 				if (member) {
-					message.member.removeRole(roleChosen);
+					member.roles.remove(roleChosen);
+					message.reply(`${user} has had the role of ${roleChosen} removed!`);
 				}
 				else {
-					message.reply(`${args[0]} isn't in this server!`);
+					message.reply(`${user} isn't in this server!`);
 				}
 			}
 			else {

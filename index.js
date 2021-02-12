@@ -1,45 +1,61 @@
-// require nodes file system module
+const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL } = require('./config.json');
+
 const fs = require('fs');
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
 const Discord = require('discord.js');
-const { prefix, token, mongodbURL_RANK, mongodbURL_REACTION } = require('./config.json');
-
-const Levels = require('discord-xp');
-Levels.setURL(mongodbURL_RANK);
-
-const mongoose = require('mongoose');
-mongoose.createConnection(mongodbURL_REACTION, { useNewUrlParser: true, useUnifiedTopology: true });
-const MessageSchema = new mongoose.Schema({
-	messageId: { type: String, required: true },
-	emojiRoleMappings: { type: mongoose.Schema.Types.Mixed },
-});
-const MessageModel = mongoose.model('message', MessageSchema);
-const cachedMessageReaction = new Map();
-
-// create a new Discord client
-const client = new Discord.Client({ partials: ['MESSAGE', 'REACTION'] });
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 client.commands = new Discord.Collection();
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+const levels = require('discord-xp');
+levels.setURL(mongodbURL_RANK);
+
+const MessageModel = require('./commands/database/model/message');
+const cachedMessageReactions = new Map();
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-
-	// set a new item in the Collection
-	// with the key as the command name and the value as the exported module
 	client.commands.set(command.name, command);
 }
 
 const cooldowns = new Discord.Collection();
 
-// when the client is ready, run this code
-// this event will only trigger one time after logging in
+function presence() {
+	const status = ['my bot life', 'with the secret data', 'with the admin commands', 'with the roles', 'some tunes in voice chat', 'warframe with ordis'];
+	const rstatus = Math.floor(Math.random() * status.length);
+	client.user.setPresence({
+		status: 'online',
+		activity: {
+			name: `${status[rstatus]}`,
+		},
+	});
+}
+setInterval(presence, 30000);
+
+
 client.once('ready', () => {
-	console.log('Ready!');
+	console.log('Krona is Ready!');
 });
 
-client.on('guildMemberAdd', (member) => {
-	console.log(`New User ${member.user.username} has joined ${member.guild.name}!`);
-	member.guild.channels.find(c => c.name === 'welcome').send(`${member.user.username} has joined this server! Lets give them a proper welcome!\n Since you are here I would like give you a nice rundown on some important information! Please try to complete each step:\n 1. Please read the rules in #rules and react so that we know you understand\n 2.Please add an introduction if you like to in the #introductions channel.\n 3. Please add your gamertag to #gamertags as well!\n 4. We have many fun roles you are welcome to look over in the #roles channel.\n 5. The #news channel contains a lot of neat knowledge for you as well.\n 6. A director will be with you shortly to get you settled into the server!`);
+client.on('guildMemberAdd', guildMember => {
+	console.log(`New User ${guildMember.user.username} has joined ${guildMember.guild.name}!`);
+	const ruleChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${RULE_CHANNEL}`);
+	const introChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${INTRO_CHANNEL}`);
+	const gamertagChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${GAMERTAG_CHANNEL}`);
+	const roleChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${ROLE_CHANNEL}`);
+	const newsChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${NEWS_CHANNEL}`);
+	const jsonEmbed = new Discord.MessageEmbed()
+		.setTitle(`Wecome ${guildMember.user.username}`)
+		.setDescription('Lets give them a proper welcome eveyone!\nSince you are new around here I would like give you a nice rundown on some important information! Please try to complete each task, it will make this bots circuitry spark! :heart: ')
+		.addFields(
+			{ name: 'Task 1: ', value: `Please read the rules in ${ruleChannel} and react so that we know you understand.` },
+			{ name: 'Task 2: ', value: `Please add an introduction if you like to in the ${introChannel} channel.` },
+			{ name: 'Task 3: ', value: `Please add your gamertags to ${gamertagChannel} as well!` },
+			{ name: 'Task 4: ', value: `We have many fun roles you are welcome to look over in the ${roleChannel} channel.` },
+			{ name: 'Task 5: ', value: `The ${newsChannel} channel contains a lot of neat knowledge for you as well.` },
+		);
+	guildMember.guild.channels.cache.find(c => c.name === `${WELCOME_CHANNEL}`).send(jsonEmbed);
 });
 
 client.on('message', message => {
@@ -47,9 +63,6 @@ client.on('message', message => {
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift().toLowerCase();
-
-	if (!client.commands.has(commandName)) return;
-
 	const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
@@ -96,7 +109,7 @@ client.on('message', message => {
 	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
 	try {
-		command.execute(message, args);
+		command.execute(message, args, commandName);
 	}
 	catch (error) {
 		console.error(error);
@@ -109,71 +122,82 @@ client.on('message', async (message) => {
 	if (message.author.bot) return;
 	// Min 1, Max 30
 	const randomAmountOfXp = Math.floor(Math.random() * 29) + 1;
-	const hasLeveledUp = await Levels.appendXp(message.author.id, message.guild.id, randomAmountOfXp);
+	const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randomAmountOfXp);
 	if (hasLeveledUp) {
-		const user = await Levels.fetch(message.author.id, message.guild.id);
+		const user = await levels.fetch(message.author.id, message.guild.id);
 		message.guild.channels.cache.find(i => i.name === 'rank').send(`${message.author}, congratulations! You have leveled up to **${user.level}**. :tada:`);
 	}
 });
 
-client.on('channelCreate', function(channel) {
-	console.log(`Channel Created: ${channel}`);
-});
-
-client.on('channelDelete', function(channel) {
-	console.log(`Channel Deleted: ${channel}`);
-});
-
-client.on('channelPinsUpdate', function(channel, time) {
-	console.log(`Channel Pins Update: ${channel}:${time}`);
-});
-
-client.on('channelUpdate', function(oldChannel, newChannel) {
-	console.log(`${oldChannel} to ${newChannel} channelUpdate -> a channel is updated - e.g. name change, topic change`);
-});
-
-client.on('clientUserGuildSettingsUpdate', function(clientUserGuildSettings) {
-	console.log(`${clientUserGuildSettings} clientUserGuildSettingsUpdate -> client user\'s settings update`);
-});
-
-client.on(newFunction(), function(clientUserSettings) {
-	console.log(`${clientUserSettings} clientUserSettingsUpdate -> client user's settings update`);
-});
-
-client.on('emojiCreate', function(emoji) {
-	console.log(`${emoji} a custom emoji is created in a guild`);
-});
-
-client.on('emojiDelete', function(emoji) {
-	console.log(`${emoji} a custom guild emoji is deleted`);
-});
-
-client.on('emojiUpdate', function(oldEmoji, newEmoji) {
-	console.log(`${oldEmoji} to ${newEmoji} a custom guild emoji is updated`);
-});
-
-client.on('guildBanAdd', function(guild, user) {
-	console.log(`${user} is banned from ${guild}`);
-});
-
-client.on('guildBanRemove', function(guild, user) {
-	console.log(`${user} is unbanned from ${guild}`);
-});
-
-client.on('guildMemberUpdate', function(oldMember, newMember) {
-	console.error(`${oldMember} member changes to ${newMember} - i.e. new role, removed role, nickname.`);
-});
-
-client.on('messageDelete', function(message) {
-	console.log(`message is deleted -> ${message}`);
-});
-
-client.on('messageDeleteBulk', function(messages) {
-	console.log(`messages are deleted -> ${messages}`);
-});
-
 client.on('messageReactionAdd', async function(reaction, user) {
-//
+	const addMemberRole = (emojiRoleMappings) => {
+		try {
+			// eslint-disable-next-line no-prototype-builtins
+			if(emojiRoleMappings.hasOwnProperty(reaction.emoji.id)) {
+				const roleId = emojiRoleMappings[reaction.emoji.id];
+				const role = reaction.message.guild.roles.cache.get(roleId);
+				const member = reaction.message.guild.members.cache.get(user.id);
+				if (role && member) {
+					member.roles.add(role);
+				}
+			}
+		}
+		catch(err) {
+			console.log(err);
+		}
+	};
+	if(reaction.message.partial) {
+		await reaction.message.fetch();
+		const { id } = reaction.message;
+		try {
+			const msgDocument = await MessageModel.findOne({ messageId: id });
+			if (msgDocument) {
+				cachedMessageReactions.set(id, msgDocument.emojiRoleMappings);
+				const { emojiRoleMappings } = msgDocument;
+				addMemberRole(emojiRoleMappings);
+			}
+		}
+		catch(err) {
+			console.log(err);
+		}
+	}
+	else {
+		const emojiRoleMappings = cachedMessageReactions.get(reaction.message.id);
+		addMemberRole(emojiRoleMappings);
+	}
+});
+
+client.on('messageReactionRemove', async function(reaction, user) {
+	const removeMemberRole = (emojiRoleMappings) => {
+		// eslint-disable-next-line no-prototype-builtins
+		if(emojiRoleMappings.hasOwnProperty(reaction.emoji.id)) {
+			const roleId = emojiRoleMappings[reaction.emoji.id];
+			const role = reaction.message.guild.roles.cache.get(roleId);
+			const member = reaction.message.guild.members.cache.get(user.id);
+			if (role && member) {
+				member.roles.remove(role);
+			}
+		}
+	};
+	if (reaction.message.partial) {
+		await reaction.message.fetch();
+		const { id } = reaction.message;
+		try {
+			const msgDocument = await MessageModel.findOne({ messageId: id });
+			if (msgDocument) {
+				cachedMessageReactions.set(id, msgDocument.emojiRoleMappings);
+				const { emojiRoleMappings } = msgDocument;
+				removeMemberRole(emojiRoleMappings);
+			}
+		}
+		catch(err) {
+			console.log(err);
+		}
+	}
+	else {
+		const emojiRoleMappings = cachedMessageReactions.get(reaction.message.id);
+		removeMemberRole(emojiRoleMappings);
+	}
 });
 
 client.on('roleDelete', function(role) {
@@ -184,10 +208,4 @@ client.on('roleUpdate', function(oldRole, newRole) {
 	console.error(`${oldRole} is updated to ${newRole}`);
 });
 
-
-// login to Discord with your app's token
 client.login(token);
-
-function newFunction() {
-	return 'clientUserSettingsUpdate';
-}

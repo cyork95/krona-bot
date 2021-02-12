@@ -1,20 +1,22 @@
 module.exports = {
 	name: 'add-role',
-	description: 'Adds specified role to the specified user.',
+	description: 'Adds specified role tp the specified user.',
+	aliases: ['ar', 'add'],
 	args: true,
-	permissions: 'ADD_ROLE',
-	usage: '<user> <role>',
+	permissions: 'MANAGE_ROLES_OR_PERMISSIONS',
+	usage: '<@user> <role>',
 	execute(message, args) {
-		const user = args[0];
+		const user = message.mentions.users.first();
+		const member = message.guild.member(user);
 		if (user) {
 			const roleChosen = message.guild.roles.cache.find(role => role.name === args[1]);
 			if (roleChosen) {
-				const member = message.guild.member(user);
 				if (member) {
-					message.member.addRole(roleChosen);
+					member.roles.add(roleChosen);
+					message.reply(`${user} has had the role of ${roleChosen} added!`);
 				}
 				else {
-					message.reply(`${args[0]} isn't in this server!`);
+					message.reply(`${user} isn't in this server!`);
 				}
 			}
 			else {

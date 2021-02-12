@@ -3,22 +3,16 @@ module.exports = {
 	description: 'Hug Member',
 	args: true,
 	guildOnly: true,
-	usage: '<user>',
-	execute(message, args) {
-		const user = args[0];
-		if (user) {
-			const member = message.guild.member(user);
-			if (member) {
-				message.channel.send(`${user.tag} has been hugged by ${message.author.username}`);
-			}
-			else {
-				// The mentioned user isn't in this server
-				message.reply(`${args[0]} isn't in this server!`);
-			}
+	usage: '<@user>',
+	execute(message) {
+		const user = message.mentions.users.first();
+		const member = message.guild.member(user);
+		message.delete({ timeout: 3500 });
+		if (member) {
+			message.channel.send(`:hugging: ${user} :hugging: has been hugged by ${message.author.username}!`);
 		}
 		else {
-			// Otherwise, if no user was mentioned
-			message.reply('You didn\'t mention the user to hug!');
+			message.reply(`${user} isn't in this server!`);
 		}
 	},
 };
