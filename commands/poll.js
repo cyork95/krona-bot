@@ -4,7 +4,7 @@ module.exports = {
 	name: 'poll',
 	description: 'Create a poll with reacts.',
 	args: true,
-	usage: '<time in seconds(s) or minutes (m) exp. 30s> ',
+	usage: '<time in seconds(s) or minutes (m) exp. 30s> <question>',
 	async execute(message, args) {
 		let time = args[0];
 		const question = args.slice(1).join(' ');

@@ -1,18 +1,19 @@
 const ytdl = require('ytdl-core');
 const ytSearch = require('yt-search');
+const Genius = require('genius-lyrics');
+const Client = new Genius.Client();
 
 const queue = new Map();
 
 module.exports = {
 	name: 'play',
-	aliases: ['skip', 'stop', 'pause', 'unpause', 'queue'],
+	aliases: ['skip', 'stop', 'pause', 'unpause', 'queue', 'lyrics'],
 	cooldown: 0,
-	description: 'Advanced music bot',
+	description: 'Advanced music bot. !play to play a song, !skip to skip to next song, !pause to pause, !unpause to resume, !queue to veiw the current music queue, !lyrics <optional: song name> type !lyrics to get current playing song lyrics or add the song name you want to search for. ex (!lyrics Rap God - Eminem)',
 	permissions: ['CONNECT', 'SPEAK'],
 	args: false,
-	usage: '<keywords to search for song>',
+	usage: '!play <keywords to search for song> | !lyrics <song name>',
 	async execute(message, args, cmd) {
-		message.delete({ timeout: 3500 });
 		const voice_channel = message.member.voice.channel;
 		if (!voice_channel) return message.channel.send('You need to be in a voice channel to execute this command!');
 
@@ -74,6 +75,7 @@ module.exports = {
 		else if(cmd === 'pause') {pause_song(message, server_queue);}
 		else if(cmd === 'unpause') {unpause_song(message, server_queue);}
 		else if(cmd === 'queue') {show_queue(message, server_queue);}
+		else if(cmd === 'lyrics') {show_lyrics(message, server_queue, args, Client);}
 	},
 
 };
@@ -126,6 +128,33 @@ const show_queue = (message, server_queue) => {
 	for(let i = 0; i < server_queue.songs.length; i++) {
 		songQueue += `${i + 1}. ${server_queue.songs[i]['title']}\n`;
 	}
-	message.channel.send(`The current queue is: \n ${songQueue}`);
+	message.channel.send(`The current queue is: \n------------------------- \n${songQueue}`);
+};
+
+const show_lyrics = async (message, server_queue, args) => {
+	if (args != '') {
+		const songName = args.slice(0).join(' ');
+		try {
+			const searches = await Client.songs.search(`${songName}`);
+			const firstSong = searches[0];
+			const lyrics = await firstSong.lyrics();
+			message.channel.send(`Lyrics for ${songName}:\n ${lyrics}`, { split: true });
+		}
+		catch (err) {
+			message.channel.send(`Hmmmm... I am unable to find lyrics for ${songName}}. Maybe try cleaning up the name and searching again?`);
+		}
+	}
+	else {
+		const currentSong = server_queue.songs[0]['title'];
+		try {
+			const searches = await Client.songs.search(`${currentSong}`);
+			const firstSong = searches[0];
+			const lyrics = await firstSong.lyrics();
+			message.channel.send(`Lyrics for ${currentSong}:\n ${lyrics}`, { split: true });
+		}
+		catch (err) {
+			message.channel.send(`Hmmmm... I am unable to find lyrics for ${currentSong}. Maybe try cleaning up the name and searching again?`);
+		}
+	}
 };
 
