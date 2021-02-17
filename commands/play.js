@@ -97,51 +97,82 @@ const video_player = async (guild, song) => {
 };
 
 const skip_song = async (message, server_queue) => {
-	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-	if(server_queue.connection.dispatcher.paused) {
-		await server_queue.connection.dispatcher.resume();
+	try {
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if(!server_queue) {
+			return message.channel.send('There are no songs in queue 😔');
+		}
+		else if(server_queue.connection.dispatcher.paused) {
+			await server_queue.connection.dispatcher.resume();
+			server_queue.connection.dispatcher.end();
+		}
 		server_queue.connection.dispatcher.end();
 	}
-	if(!server_queue) {
-		return message.channel.send('There are no songs in queue 😔');
+	catch (err) {
+		console.log('Music Execption Skip!');
 	}
 
-	server_queue.connection.dispatcher.end();
 };
 
 const stop_song = async (message, server_queue) => {
-	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-	if(server_queue.connection.dispatcher.paused) {
-		await server_queue.connection.dispatcher.resume();
+	try {
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if (!server_queue) {
+			message.channel.send('There are no songs playing!');
+		}
+		if(server_queue.connection.dispatcher.paused) {
+			await server_queue.connection.dispatcher.resume();
+			server_queue.songs = [];
+			server_queue.connection.dispatcher.end();
+		}
 		server_queue.songs = [];
 		server_queue.connection.dispatcher.end();
 	}
-	server_queue.songs = [];
-	server_queue.connection.dispatcher.end();
+	catch (err) {
+		console.log('Music Execption Stop!');
+	}
 };
 
 const pause_song = (message, server_queue) => {
-	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-	if(server_queue.connection.dispatcher.paused) return message.channel.send('Song is already paused!');
-	server_queue.connection.dispatcher.pause();
-	message.channel.send('Paused the song!');
+	try {
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if(server_queue.connection.dispatcher.paused) return message.channel.send('Song is already paused!');
+		server_queue.connection.dispatcher.pause();
+		message.channel.send('Paused the song!');
+	}
+	catch (err) {
+		console.log('Music Execption Pause!');
+	}
+
 };
 
 const unpause_song = (message, server_queue) => {
-	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-	if(!server_queue.connection.dispatcher.paused) return message.channel.send('Song isn\'t paused!');
-	server_queue.connection.dispatcher.resume();
-	message.channel.send('Unpaused the song!');
+	try {
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if(!server_queue.connection.dispatcher.paused) return message.channel.send('Song isn\'t paused!');
+		server_queue.connection.dispatcher.resume();
+		message.channel.send('Unpaused the song!');
+	}
+	catch (err) {
+		console.log('Music Execption Unpause!');
+	}
+
 };
 
 const show_queue = (message, server_queue) => {
-	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-	if(!server_queue.songs) return message.channel.send('There are no songs in the queue!');
-	let songQueue = '';
-	for(let i = 0; i < server_queue.songs.length; i++) {
-		songQueue += `${i + 1}. ${server_queue.songs[i]['title']}\n`;
+	try {
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if(!server_queue) return message.channel.send('There are no songs in the queue!');
+		let songQueue = '';
+		for(let i = 0; i < server_queue.songs.length; i++) {
+			songQueue += `${i + 1}. ${server_queue.songs[i]['title']}\n`;
+		}
+		message.channel.send(`The current queue is: \n------------------------- \n${songQueue}`);
 	}
-	message.channel.send(`The current queue is: \n------------------------- \n${songQueue}`);
+	catch (err) {
+		console.log('Music Execption Queue!');
+	}
+
 };
 
 const show_lyrics = async (message, server_queue, args) => {
