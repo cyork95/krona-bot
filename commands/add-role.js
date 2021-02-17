@@ -8,23 +8,24 @@ module.exports = {
 	execute(message, args) {
 		const user = message.mentions.users.first();
 		const member = message.guild.member(user);
+		message.delete({ timeout: 3500 });
 		if (user) {
 			const roleChosen = message.guild.roles.cache.find(role => role.name === args[1]);
 			if (roleChosen) {
 				if (member) {
 					member.roles.add(roleChosen);
-					message.reply(`${user} has had the role of ${roleChosen} added!`);
+					message.channel.send(`${user} has had the role of ${roleChosen} added!`);
 				}
 				else {
-					message.reply(`${user} isn't in this server!`);
+					message.channel.send(`${user} isn't in this server!`);
 				}
 			}
 			else {
-				message.reply('You didn\'t give a role that exists!');
+				message.channel.send('You didn\'t give a role that exists!');
 			}
 		}
 		else {
-			message.reply(`You didn't mention the user to give the ${args[1]} role to!`);
+			message.channel.send(`You didn't mention the user to give the ${args[1]} role to!`);
 		}
 	},
 };

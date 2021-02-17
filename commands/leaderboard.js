@@ -5,7 +5,6 @@ module.exports = {
 	name: 'leaderboard',
 	description: 'Displays the server leaderboard.',
 	async execute(message) {
-		// We grab top 10 users with most xp in the current server.
 		const rawLeaderboard = await levels.fetchLeaderboard(message.guild.id, 10);
 		if (rawLeaderboard.length < 1) return message.guild.channels.cache.find(i => i.name === 'rank').send('Nobody\'s in leaderboard yet.');
 		// We process the leaderboard.

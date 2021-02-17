@@ -96,33 +96,46 @@ const video_player = async (guild, song) => {
 	await song_queue.text_channel.send(`🎶 Now playing **${song.title}**`);
 };
 
-const skip_song = (message, server_queue) => {
+const skip_song = async (message, server_queue) => {
 	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+	if(server_queue.connection.dispatcher.paused) {
+		await server_queue.connection.dispatcher.resume();
+		server_queue.connection.dispatcher.end();
+	}
 	if(!server_queue) {
 		return message.channel.send('There are no songs in queue 😔');
 	}
+
 	server_queue.connection.dispatcher.end();
 };
 
-const stop_song = (message, server_queue) => {
+const stop_song = async (message, server_queue) => {
 	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+	if(server_queue.connection.dispatcher.paused) {
+		await server_queue.connection.dispatcher.resume();
+		server_queue.songs = [];
+		server_queue.connection.dispatcher.end();
+	}
 	server_queue.songs = [];
 	server_queue.connection.dispatcher.end();
 };
 
 const pause_song = (message, server_queue) => {
+	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
 	if(server_queue.connection.dispatcher.paused) return message.channel.send('Song is already paused!');
 	server_queue.connection.dispatcher.pause();
 	message.channel.send('Paused the song!');
 };
 
 const unpause_song = (message, server_queue) => {
+	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
 	if(!server_queue.connection.dispatcher.paused) return message.channel.send('Song isn\'t paused!');
 	server_queue.connection.dispatcher.resume();
 	message.channel.send('Unpaused the song!');
 };
 
 const show_queue = (message, server_queue) => {
+	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
 	if(!server_queue.songs) return message.channel.send('There are no songs in the queue!');
 	let songQueue = '';
 	for(let i = 0; i < server_queue.songs.length; i++) {

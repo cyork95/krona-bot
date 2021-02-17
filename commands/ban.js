@@ -13,15 +13,15 @@ module.exports = {
 		if (member) {
 			const memberToKick = message.guild.members.cache.get(member.id);
 			memberToKick.kick({ reason: reason }).then(() => {
-				message.reply(`Successfully banned ${user} for ${reason}!`);
+				message.channel.send(`Successfully banned ${user} for ${reason}!`);
 			})
 				.catch(err => {
-					message.reply('I was unable to ban the member. Please ask <@CoYoFroYo> why this didnt work.');
+					message.channel.send('I was unable to ban the member. Please ask <@CoYoFroYo> why this didnt work.');
 					console.error(err);
 				});
 		}
 		else {
-			message.reply(`${user} isn't in this server or can't be banned!`);
+			message.channel.send(`${user} isn't in this server or can't be banned!`);
 		}
 	},
 };
