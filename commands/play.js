@@ -7,7 +7,7 @@ const queue = new Map();
 
 module.exports = {
 	name: 'play',
-	aliases: ['skip', 'stop', 'pause', 'unpause', 'queue', 'lyrics'],
+	aliases: ['skip', 'stop', 'pause', 'unpause', 'queue', 'lyrics', 'set-volume'],
 	cooldown: 0,
 	description: 'Advanced music bot. !play to play a song, !skip to skip to next song, !pause to pause, !unpause to resume, !queue to veiw the current music queue, !lyrics <optional: song name> type !lyrics to get current playing song lyrics or add the song name you want to search for. ex (!lyrics Rap God - Eminem)',
 	permissions: ['CONNECT', 'SPEAK'],
@@ -76,6 +76,7 @@ module.exports = {
 		else if(cmd === 'unpause') {unpause_song(message, server_queue);}
 		else if(cmd === 'queue') {show_queue(message, server_queue);}
 		else if(cmd === 'lyrics') {show_lyrics(message, server_queue, args, Client);}
+		else if(cmd === 'set-volume') {set_volume(message, server_queue, args);}
 	},
 
 };
@@ -103,8 +104,8 @@ const skip_song = async (message, server_queue) => {
 			return message.channel.send('There are no songs in queue 😔');
 		}
 		else if(server_queue.connection.dispatcher.paused) {
-			await server_queue.connection.dispatcher.resume();
-			server_queue.connection.dispatcher.end();
+			server_queue.connection.dispatcher.resume();
+			return server_queue.connection.dispatcher.end();
 		}
 		server_queue.connection.dispatcher.end();
 	}
@@ -118,26 +119,26 @@ const stop_song = async (message, server_queue) => {
 	try {
 		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
 		if (!server_queue) {
-			message.channel.send('There are no songs playing!');
+			return message.channel.send('There are no songs playing!');
 		}
 		if(server_queue.connection.dispatcher.paused) {
-			await server_queue.connection.dispatcher.resume();
+			server_queue.connection.dispatcher.resume();
 			server_queue.songs = [];
 			server_queue.connection.dispatcher.end();
 		}
 		server_queue.songs = [];
-		server_queue.connection.dispatcher.end();
+		await server_queue.connection.dispatcher.end();
 	}
 	catch (err) {
 		console.log('Music Execption Stop!');
 	}
 };
 
-const pause_song = (message, server_queue) => {
+const pause_song = async (message, server_queue) => {
 	try {
 		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
 		if(server_queue.connection.dispatcher.paused) return message.channel.send('Song is already paused!');
-		server_queue.connection.dispatcher.pause();
+		server_queue.connection.dispatcher.pause(true);
 		message.channel.send('Paused the song!');
 	}
 	catch (err) {
@@ -146,17 +147,11 @@ const pause_song = (message, server_queue) => {
 
 };
 
-const unpause_song = (message, server_queue) => {
-	try {
-		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
-		if(!server_queue.connection.dispatcher.paused) return message.channel.send('Song isn\'t paused!');
-		server_queue.connection.dispatcher.resume();
-		message.channel.send('Unpaused the song!');
-	}
-	catch (err) {
-		console.log('Music Execption Unpause!');
-	}
-
+const unpause_song = async (message, server_queue) => {
+	if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+	if(!server_queue.connection.dispatcher.paused) return message.channel.send('Song isn\'t paused!');
+	server_queue.connection.dispatcher.resume();
+	message.channel.send('Unpaused the song!');
 };
 
 const show_queue = (message, server_queue) => {
@@ -172,7 +167,6 @@ const show_queue = (message, server_queue) => {
 	catch (err) {
 		console.log('Music Execption Queue!');
 	}
-
 };
 
 const show_lyrics = async (message, server_queue, args) => {
@@ -202,3 +196,23 @@ const show_lyrics = async (message, server_queue, args) => {
 	}
 };
 
+const set_volume = (message, server_queue, args) => {
+	const volume = parseInt(args[0]) / 100;
+	try {
+		if (isNaN(volume) || volume > 1 || volume < 0.01) {
+			return message.channel.send('You did not send a valid number! Please enter a number between 1 and 100!');
+		}
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a channel to execute this command!');
+		if(!server_queue) return message.channel.send('There are no songs in the queue!');
+		if (!server_queue) {
+			return message.channel.send('There are no songs playing!');
+		}
+		else {
+			server_queue.connection.dispatcher.setVolume(volume);
+			message.channel.send('The volume has been changed!');
+		}
+	}
+	catch (err) {
+		console.log('Music Execption Volume!');
+	}
+};

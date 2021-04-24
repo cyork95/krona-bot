@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 
 module.exports = {
 	name: 'info',
-	description: 'Retirve general bot info.',
+	description: 'Retrieve general bot info.',
 	guildOnly: true,
 	execute(message) {
 		message.delete({ timeout: 3500 });

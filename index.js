@@ -1,4 +1,4 @@
-const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL } = require('./config.json');
+const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL, RANK_CHANNEL } = require('./config.json');
 
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -11,9 +11,6 @@ client.streams = new Discord.Collection();
 
 const levels = require('discord-xp');
 levels.setURL(mongodbURL_RANK);
-
-const MessageModel = require('./commands/database/model/message');
-const cachedMessageReactions = new Map();
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -126,7 +123,7 @@ client.on('message', async (message) => {
 	const hasLeveledUp = await levels.appendXp(message.author.id, message.guild.id, randomAmountOfXp);
 	if (hasLeveledUp) {
 		const user = await levels.fetch(message.author.id, message.guild.id);
-		message.guild.channels.cache.find(i => i.name === 'rank').send(`${message.author}, congratulations! You have leveled up to **${user.level}**. :tada:`);
+		message.guild.channels.cache.find(i => i.name === `${RANK_CHANNEL}`).send(`${message.author}, congratulations! You have leveled up to **${user.level}**. :tada:`);
 	}
 });
 
