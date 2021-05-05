@@ -1,4 +1,4 @@
-const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL, RANK_CHANNEL } = require('./config.json');
+const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL, RANK_CHANNEL, COMMAND_CHANNEL } = require('./config.json');
 
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -43,12 +43,13 @@ client.on('guildMemberAdd', guildMember => {
 	const gamertagChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${GAMERTAG_CHANNEL}`);
 	const roleChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${ROLE_CHANNEL}`);
 	const newsChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${NEWS_CHANNEL}`);
+	const botCommandChannel = guildMember.guild.channels.cache.find(channel => channel.name === `${COMMAND_CHANNEL}`);
 	const jsonEmbed = new Discord.MessageEmbed()
-		.setTitle(`Wecome ${guildMember.user.username}`)
-		.setDescription('Lets give them a proper welcome eveyone!\nSince you are new around here I would like give you a nice rundown on some important information! Please try to complete each task, it will make this bots circuitry spark! :heart: ')
+		.setTitle(`Welcome ${guildMember.user.username}!!!`)
+		.setDescription(`Lets give them a proper welcome eveyone!\nSince you are new around here I would like give you a nice rundown on some important information!\n We have a Warframe Bot (Orokin Bot) and a General Purpose Bot (Myself!) you can find the commands in the ${botCommandChannel} channel!\n We also have some build guides in the build guide section! We are alwasys adding more builds and you have some builds to show off just DM @CoYoFroYo. \n We also have some Warframe guides and neat info in the guide section.\n Please try to complete each below task, it will make this bots circuitry spark! :heart: `)
 		.addFields(
-			{ name: 'Task 1: ', value: `Please read the rules in ${ruleChannel} and react so that we know you understand.` },
-			{ name: 'Task 2: ', value: `Please add an introduction if you like to in the ${introChannel} channel.` },
+			{ name: 'Task 1: ', value: `Please read the rules in ${ruleChannel}!` },
+			{ name: 'Task 2: ', value: `Please add an introduction, if you like, to in the ${introChannel} channel!` },
 			{ name: 'Task 3: ', value: `Please add your gamertags to ${gamertagChannel} as well!` },
 			{ name: 'Task 4: ', value: `We have many fun roles you are welcome to look over in the ${roleChannel} channel.` },
 			{ name: 'Task 5: ', value: `The ${newsChannel} channel contains a lot of neat knowledge for you as well.` },
