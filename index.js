@@ -1,4 +1,4 @@
-const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL, RANK_CHANNEL, COMMAND_CHANNEL } = require('./config.json');
+const { prefix, token, mongodbURL_RANK, INTRO_CHANNEL, RULE_CHANNEL, GAMERTAG_CHANNEL, ROLE_CHANNEL, NEWS_CHANNEL, WELCOME_CHANNEL, RANK_CHANNEL, COMMAND_CHANNEL, TRAP_PRIME } = require('./config.json');
 
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -58,6 +58,17 @@ client.on('guildMemberAdd', guildMember => {
 });
 
 client.on('message', message => {
+	if (message.content.toLowerCase().includes('trap prime')) {
+		client.users.fetch(TRAP_PRIME)
+			.then(user => {
+				const embed = new Discord.MessageEmbed()
+					.setTitle('Trap Prime')
+					.setDescription(`${user.tag} is officially known as Trap Prime!`)
+					.setThumbnail(user.displayAvatarURL({ dynamic: true }));
+				message.channel.send(embed);
+			})
+			.catch(console.error);
+	}
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
