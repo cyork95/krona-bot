@@ -12,7 +12,6 @@ module.exports = {
 		const images = await loadImage(message.author.username);
 		const image = images[0];
 		const breed = image.breeds[0];
-		message.delete({ timeout: 3500 });
 		message.channel.send('***' + breed.name + '*** \r *' + breed.temperament + '*', { files: [ image.url ] });
 	},
 };

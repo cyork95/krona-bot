@@ -4,7 +4,7 @@ module.exports = {
 	name: 'remind',
 	description: 'Helps remind you something',
 	args: true,
-	usage: 'remind <time> <reminder>',
+	usage: '<time> <reminder>',
 	async execute(message, args, Discord) {
 		const time = args[0];
 		const user = message.author;

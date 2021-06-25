@@ -8,7 +8,6 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 client.commands = new Discord.Collection();
 client.streams = new Discord.Collection();
 
-
 const levels = require('discord-xp');
 levels.setURL(mongodbURL_RANK);
 
